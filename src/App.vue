@@ -6,21 +6,38 @@
 <script>
 import Todo from "./components/Todo";
 import AddTodo from "./components/AddTodo";
-
+import axios from "axios";
 export default {
   name: "App",
   components: {
     Todo,
-    AddTodo
+    AddTodo,
   },
   methods: {
-    addTodo(todo){
-      console.log(todo)
-      this.todos.push(todo)
+    addTodo(todo) {
+      const { title, completed } = todo;
+      axios
+        .post("https://jsonplaceholder.typicode.com/todos", {
+          title,
+          completed,
+        })
+        .then((res) => {
+          this.todos.push(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     deleteTodo(id) {
-      console.log(id);
-      this.todos = this.todos.filter((todo) => todo.id !== id);
+      axios
+        .delete("https://jsonplaceholder.typicode.com/todos/" + id)
+        .then((res) => {
+          console.log(res)
+          this.todos = this.todos.filter((todo) => todo.id !== id);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
   },
   data() {
@@ -34,6 +51,17 @@ export default {
         { id: 6, title: "Start coding" },
       ],
     };
+  },
+  created() {
+    console.log(123456789);
+    axios
+      .get("https://jsonplaceholder.typicode.com/todos?_limit=10")
+      .then((res) => {
+        console.log((this.todos = res?.data));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   },
 };
 </script>
